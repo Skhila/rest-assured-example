@@ -1,9 +1,7 @@
 package com.koroyan.restassuredexample.services;
 
-import com.koroyan.restassuredexample.pojos.request.AddInteger;
-import com.koroyan.restassuredexample.pojos.request.Body;
-import com.koroyan.restassuredexample.pojos.request.Envelope;
-import com.koroyan.restassuredexample.pojos.request.FindPerson;
+import com.koroyan.restassuredexample.pojos.request.*;
+import com.koroyan.restassuredexample.pojos.request.getlistbyname.GetListByName;
 
 public class RequestService {
 
@@ -18,5 +16,11 @@ public class RequestService {
         return new Envelope(
                 new Envelope.Header(),
                 new Body(new FindPerson(id)));
+    }
+
+    public static Envelope getListByNameRequestModel(String name) {
+        return new Envelope(
+                new Envelope.Header(),
+                new Body(new GetListByName(name)));
     }
 }

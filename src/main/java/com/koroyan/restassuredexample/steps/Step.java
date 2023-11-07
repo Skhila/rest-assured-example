@@ -1,20 +1,26 @@
 package com.koroyan.restassuredexample.steps;
 
+import com.koroyan.restassuredexample.data.CommonData;
 import com.koroyan.restassuredexample.enums.EndPoint;
 import com.koroyan.restassuredexample.enums.SOAPAction;
 import com.koroyan.restassuredexample.pojos.request.Envelope;
 import com.koroyan.restassuredexample.pojos.response.FindPersonResult;
+import com.koroyan.restassuredexample.pojos.response.GetListByNameResult;
 import com.koroyan.restassuredexample.services.RequestService;
 import com.koroyan.restassuredexample.utils.StringRequests;
 import com.koroyan.restassuredexample.utils.XmlUtils;
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import org.apache.commons.io.IOUtils;
+
 
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+import static com.koroyan.restassuredexample.data.CommonData.getListByNameResultSelector;
+import static com.koroyan.restassuredexample.enums.SOAPAction.GET_LIST_BY_NAME;
 import static io.restassured.RestAssured.given;
 
 public class Step {
@@ -86,7 +92,7 @@ public class Step {
 
     public FindPersonResult findPerson(String id) {
         Envelope findPersonRequestModel = RequestService.getFindPersonRequestModel(id);
-        RestAssured.baseURI = EndPoint.BASE_URL.toString();
+       RestAssured.baseURI = EndPoint.BASE_URL.toString();
         return given()
                 .contentType("text/xml;charset=UTF-8").and()
                 .header("SOAPAction", SOAPAction.FIND_PERSON.toString())
@@ -100,5 +106,20 @@ public class Step {
                 .extract()
                 .body().xmlPath().getObject("Envelope.Body.FindPersonResponse.FindPersonResult",
                         FindPersonResult.class);
+    }
+
+    public GetListByNameResult getListByName(String name){
+        return
+                given()
+                    .baseUri(EndPoint.BASE_URL.toString())
+                    .contentType(ContentType.XML)
+                    .header("SOAPAction", GET_LIST_BY_NAME)
+                    .body(RequestService.getListByNameRequestModel(name))
+                .when()
+                    .post()
+                .then()
+                    .assertThat()
+                    .statusCode(200)
+                    .extract().xmlPath().getObject(getListByNameResultSelector, GetListByNameResult.class);
     }
 }
